@@ -1,0 +1,54 @@
+#vpn
+vless-config.txt
+vless-config.json
+
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ansible
+*.retry
+ansible/inventories/prod.yml
+!ansible/inventories/prod.yml.example
+
+# SSH Keys
+*.pem
+*.key
+id_rsa*
+*.pub
+
+# Secrets and credentials
+*secret*
+*password*
+*credentials*
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+*~
+.*.swp
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Logs
+*.log
+
+# Yandex Cloud
+key.json
+authorized_key.json
+sa-key.json

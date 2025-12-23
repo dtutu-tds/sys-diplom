@@ -1,0 +1,22 @@
+---
+# Elasticsearch defaults
+
+# Версия Elasticsearch
+elasticsearch_version: "8.x"
+
+# Настройки кластера
+elasticsearch_cluster_name: "logs-cluster"
+elasticsearch_node_name: "elastic"
+
+# Сетевые настройки
+elasticsearch_network_host: "0.0.0.0"
+elasticsearch_http_port: 9200
+
+# JVM heap size (50% от RAM)
+elasticsearch_heap_size: "2g"
+
+# Безопасность (отключена для упрощения)
+elasticsearch_security_enabled: false
+
+# Discovery
+elasticsearch_discovery_type: "single-node"

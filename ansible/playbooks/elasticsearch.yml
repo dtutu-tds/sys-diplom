@@ -1,0 +1,8 @@
+---
+# Elasticsearch playbook
+
+- name: Install Elasticsearch
+  hosts: elastic.ru-central1.internal
+  become: yes
+  roles:
+    - elasticsearch

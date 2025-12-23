@@ -1,0 +1,15 @@
+---
+- name: Restart Zabbix server
+  systemd:
+    name: zabbix-server
+    state: restarted
+
+- name: Restart Nginx
+  systemd:
+    name: nginx
+    state: restarted
+
+- name: Restart PHP-FPM
+  systemd:
+    name: php8.1-fpm
+    state: restarted

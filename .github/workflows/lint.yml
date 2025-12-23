@@ -1,0 +1,231 @@
+# =============================================================================
+# GitHub Actions Workflow: Linting
+# =============================================================================
+# Проверка качества кода Terraform и Ansible
+# Запускается на push и pull_request в ветки main и develop
+# =============================================================================
+
+name: Lint Code
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'terraform/**'
+      - 'ansible/**'
+      - '.github/workflows/lint.yml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'terraform/**'
+      - 'ansible/**'
+      - '.github/workflows/lint.yml'
+  workflow_dispatch:  # Позволяет запускать вручную
+
+env:
+  TF_VERSION: "1.5.0"
+  ANSIBLE_VERSION: "2.15"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Terraform Linting
+  # ---------------------------------------------------------------------------
+  terraform-lint:
+    name: Terraform Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Format Check
+        id: fmt
+        run: terraform fmt -check -recursive -diff
+        working-directory: terraform
+        continue-on-error: true
+
+      - name: Terraform Init (for validation)
+        id: init
+        run: terraform init -backend=false
+        working-directory: terraform
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+        working-directory: terraform
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+
+      - name: Init TFLint
+        run: tflint --init
+        working-directory: terraform
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Run TFLint
+        id: tflint
+        run: tflint -f compact
+        working-directory: terraform
+        continue-on-error: true
+
+      - name: Post Terraform Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const output = `### Terraform Lint Results 🔍
+            
+            #### Format Check 🖌 \`${{ steps.fmt.outcome }}\`
+            #### Initialization ⚙️ \`${{ steps.init.outcome }}\`
+            #### Validation 🤖 \`${{ steps.validate.outcome }}\`
+            #### TFLint 📋 \`${{ steps.tflint.outcome }}\`
+            
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Format Status
+        if: steps.fmt.outcome == 'failure'
+        run: |
+          echo "::error::Terraform files are not properly formatted. Run 'terraform fmt -recursive' to fix."
+          exit 1
+
+  # ---------------------------------------------------------------------------
+  # Ansible Linting
+  # ---------------------------------------------------------------------------
+  ansible-lint:
+    name: Ansible Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Ansible and ansible-lint
+        run: |
+          python -m pip install --upgrade pip
+          pip install "ansible-core>=${{ env.ANSIBLE_VERSION }}" ansible-lint yamllint
+
+      - name: Create ansible-lint config
+        run: |
+          cat > .ansible-lint << 'EOF'
+          ---
+          # Ansible-lint configuration
+          profile: production
+          
+          # Exclude paths from linting
+          exclude_paths:
+            - .github/
+            - .cache/
+            - ansible/inventories/
+          
+          # Skip specific rules
+          skip_list:
+            - yaml[line-length]
+            - name[missing]
+            - no-changed-when
+            - command-instead-of-module
+            - risky-file-permissions
+          
+          # Warn only for these rules
+          warn_list:
+            - experimental
+            - ignore-errors
+          
+          # Enable offline mode (don't download galaxy roles)
+          offline: true
+          EOF
+
+      - name: Run YAML Lint
+        id: yamllint
+        run: |
+          yamllint -d relaxed ansible/
+        continue-on-error: true
+
+      - name: Run Ansible Lint
+        id: ansible-lint
+        run: |
+          cd ansible && ansible-lint --force-color
+        continue-on-error: true
+
+      - name: Ansible Syntax Check
+        id: syntax
+        run: |
+          cd ansible
+          for playbook in playbooks/*.yml; do
+            echo "Checking syntax: $playbook"
+            ansible-playbook --syntax-check "$playbook" -i inventories/prod.yml || true
+          done
+
+      - name: Post Ansible Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const output = `### Ansible Lint Results 🔍
+            
+            #### YAML Lint 📄 \`${{ steps.yamllint.outcome }}\`
+            #### Ansible Lint 🎭 \`${{ steps.ansible-lint.outcome }}\`
+            #### Syntax Check ✅ \`${{ steps.syntax.outcome }}\`
+            
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+  # ---------------------------------------------------------------------------
+  # Security Scanning
+  # ---------------------------------------------------------------------------
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Checkov (IaC Security Scanner)
+        id: checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: terraform/
+          framework: terraform
+          output_format: cli
+          soft_fail: true
+          skip_check: CKV_YC_2,CKV_YC_4,CKV_YC_11
+
+      - name: Check for secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified
+        continue-on-error: true
+

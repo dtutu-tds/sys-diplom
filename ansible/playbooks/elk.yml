@@ -1,0 +1,21 @@
+---
+# ELK Stack playbook
+# Устанавливает Elasticsearch, Kibana и Filebeat
+
+- name: Install Elasticsearch
+  hosts: elastic.ru-central1.internal
+  become: yes
+  roles:
+    - elasticsearch
+
+- name: Install Kibana
+  hosts: kibana.ru-central1.internal
+  become: yes
+  roles:
+    - kibana
+
+- name: Install Filebeat on web servers
+  hosts: web
+  become: yes
+  roles:
+    - filebeat

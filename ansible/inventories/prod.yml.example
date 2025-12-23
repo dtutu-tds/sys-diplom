@@ -1,0 +1,32 @@
+all:
+  vars:
+    ansible_user: ubuntu
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -q ubuntu@BASTION_PUBLIC_IP"'
+  
+  children:
+    bastion:
+      hosts:
+        bastion.ru-central1.internal:
+          ansible_host: BASTION_PUBLIC_IP
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    
+    web:
+      hosts:
+        web1.ru-central1.internal:
+          ansible_host: WEB1_PRIVATE_IP
+        web2.ru-central1.internal:
+          ansible_host: WEB2_PRIVATE_IP
+    
+    elk:
+      hosts:
+        elastic.ru-central1.internal:
+          ansible_host: ELASTIC_PRIVATE_IP
+        kibana.ru-central1.internal:
+          ansible_host: KIBANA_PUBLIC_IP
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    
+    zabbix:
+      hosts:
+        zabbix.ru-central1.internal:
+          ansible_host: ZABBIX_PUBLIC_IP
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'

@@ -1,0 +1,471 @@
+[37mDEBUG[0m[0000] DEBUGCORElibbox.Setup success ./tmp ./ ./tmp true
+DEBUG CORE libbox.Setup success ./tmp ./ ./tmp true
+[37mDEBUG[0m[0000] DEBUGCOREStartGrpcServerByMode 127.0.0.1:17078 3
+DEBUG CORE StartGrpcServerByMode 127.0.0.1:17078 3
+
+[37mDEBUG[0m[0000] DEBUGCOREgrpcServer started on 127.0.0.1:17078
+DEBUG CORE grpcServer started on 127.0.0.1:17078
+
+2025/12/21 14:54:57 Server listening on 127.0.0.1:17078
+[37mDEBUG[0m[0000] WARNINGCOREgrpcServer already started
+WARNING CORE grpcServer already started
+[37mDEBUG[0m[0000] INFOCORESTARTING: 
+INFO CORE STARTING: 
+[37mDEBUG[0m[0000] DEBUGCOREBuilding Config...
+DEBUG CORE Building Config...
+[37mDEBUG[0m[0000] DEBUGCOREParsing Config... 
+DEBUG CORE Parsing Config... 
+[37mDEBUG[0m[0000] DEBUGCOREParsed
+DEBUG CORE Parsed
+[37mDEBUG[0m[0000] DEBUGCOREMain Service pre start
+DEBUG CORE Main Service pre start
+[37mDEBUG[0m[0000] DEBUGCORESaving config to data/current-config.json
+DEBUG CORE Saving config to data/current-config.json
+[37mDEBUG[0m[0000] DEBUGCORECurrent Config is:
+{
+  "log": {
+    "level": "warn"
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "dns-remote",
+        "address": "1.1.1.1",
+        "address_resolver": "dns-direct",
+        "detour": "select"
+      },
+      {
+        "tag": "dns-trick-direct",
+        "address": "https://dns.cloudflare.com/dns-query",
+        "address_resolver": "dns-direct",
+        "detour": "direct-fragment §hide§"
+      },
+      {
+        "tag": "dns-direct",
+        "address": "1.1.1.1",
+        "address_resolver": "dns-local",
+        "detour": "direct-fragment §hide§"
+      },
+      {
+        "tag": "dns-local",
+        "address": "local",
+        "detour": "direct §hide§"
+      },
+      {
+        "tag": "dns-block",
+        "address": "rcode://success"
+      }
+    ],
+    "final": "dns-remote",
+    "static_ips": {
+      "api.ip.sb": [
+        "www.speedtest.net",
+        "cloudflare.com"
+      ],
+      "api.my-ip.io": [
+        "api.my-ip.io"
+      ],
+      "dns.cloudflare.com": [
+        "www.speedtest.net",
+        "cloudflare.com"
+      ],
+      "freeipapi.com": [
+        "www.speedtest.net",
+        "cloudflare.com"
+      ],
+      "ip-api.com": [
+        "ip-api.com"
+      ],
+      "ipapi.co": [
+        "www.speedtest.net",
+        "cloudflare.com"
+      ],
+      "ipinfo.io": [
+        "ipinfo.io"
+      ],
+      "ipwho.is": [
+        "ipwho.is"
+      ],
+      "myip.expert": [
+        "myip.expert"
+      ],
+      "reallyfreegeoip.org": [
+        "www.speedtest.net",
+        "cloudflare.com"
+      ],
+      "time.apple.com": [
+        "time.g.aaplimg.com",
+        "time.apple.com"
+      ]
+    }
+  },
+  "ntp": {
+    "enabled": true,
+    "interval": "12h0m0s",
+    "server": "time.apple.com",
+    "server_port": 123,
+    "tls_fragment": {}
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "mtu": 9000,
+      "address": [
+        "172.19.0.1/28",
+        "fdfe:dcba:9876::1/126"
+      ],
+      "auto_route": true,
+      "strict_route": true,
+      "endpoint_independent_nat": true,
+      "stack": "mixed",
+      "sniff": true
+    },
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "127.0.0.1",
+      "listen_port": 1080,
+      "sniff": true,
+      "sniff_override_destination": true
+    },
+    {
+      "type": "direct",
+      "tag": "dns-in",
+      "listen": "127.0.0.1",
+      "listen_port": 16450
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "selector",
+      "tag": "select",
+      "outbounds": [
+        "auto",
+        "Компьютер-Премиум подписка § 0"
+      ],
+      "default": "auto",
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "urltest",
+      "tag": "auto",
+      "outbounds": [
+        "Компьютер-Премиум подписка § 0"
+      ],
+      "url": "http://cp.cloudflare.com/",
+      "urls": [
+        "http://cp.cloudflare.com/",
+        "http://captive.apple.com/generate_204",
+        "https://cp.cloudflare.com",
+        "https://google.com/generate_204"
+      ],
+      "interval": "10m0s",
+      "tolerance": 1,
+      "idle_timeout": "30m0s",
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "vless",
+      "tag": "Компьютер-Премиум подписка § 0",
+      "server": "195.26.227.218",
+      "server_port": 12058,
+      "uuid": "f5b3b4e4-5d58-47bf-b031-79e00c33c7ae",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "google.com",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "VROGV72IaUVlgjm9jOqguaFS__W6bUYt-aeLESWUM3w",
+          "short_id": "aa62531bd09b31"
+        }
+      },
+      "packet_encoding": "xudp"
+    },
+    {
+      "type": "dns",
+      "tag": "dns-out §hide§"
+    },
+    {
+      "type": "direct",
+      "tag": "direct §hide§"
+    },
+    {
+      "type": "direct",
+      "tag": "direct-fragment §hide§",
+      "tls_fragment": {
+        "enabled": true,
+        "size": "2-4",
+        "sleep": "2-4"
+      }
+    },
+    {
+      "type": "direct",
+      "tag": "bypass §hide§"
+    },
+    {
+      "type": "block",
+      "tag": "block §hide§"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "inbound": "dns-in",
+        "outbound": "dns-out §hide§"
+      },
+      {
+        "port": 53,
+        "outbound": "dns-out §hide§"
+      },
+      {
+        "ip_cidr": "10.10.34.0/24",
+        "outbound": "select"
+      },
+      {
+        "domain": "time.apple.com",
+        "outbound": "direct §hide§"
+      }
+    ],
+    "final": "select",
+    "auto_detect_interface": true,
+    "override_android_vpn": true
+  },
+  "experimental": {
+    "clash_api": {
+      "external_controller": "127.0.0.1:16756",
+      "external_ui": "webui"
+    }
+  }
+}
+DEBUG CORE Current Config is:
+{
+  "log": {
+    "level": "warn"
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "dns-remote",
+        "address": "1.1.1.1",
+        "address_resolver": "dns-direct",
+        "detour": "select"
+      },
+      {
+        "tag": "dns-trick-direct",
+        "address": "https://dns.cloudflare.com/dns-query",
+        "address_resolver": "dns-direct",
+        "detour": "direct-fragment §hide§"
+      },
+      {
+        "tag": "dns-direct",
+        "address": "1.1.1.1",
+        "address_resolver": "dns-local",
+        "detour": "direct-fragment §hide§"
+      },
+      {
+        "tag": "dns-local",
+        "address": "local",
+        "detour": "direct §hide§"
+      },
+      {
+        "tag": "dns-block",
+        "address": "rcode://success"
+      }
+    ],
+    "final": "dns-remote",
+    "static_ips": {
+      "api.ip.sb": [
+        "www.speedtest.net",
+        "cloudflare.com"
+      ],
+      "api.my-ip.io": [
+        "api.my-ip.io"
+      ],
+      "dns.cloudflare.com": [
+        "www.speedtest.net",
+        "cloudflare.com"
+      ],
+      "freeipapi.com": [
+        "www.speedtest.net",
+        "cloudflare.com"
+      ],
+      "ip-api.com": [
+        "ip-api.com"
+      ],
+      "ipapi.co": [
+        "www.speedtest.net",
+        "cloudflare.com"
+      ],
+      "ipinfo.io": [
+        "ipinfo.io"
+      ],
+      "ipwho.is": [
+        "ipwho.is"
+      ],
+      "myip.expert": [
+        "myip.expert"
+      ],
+      "reallyfreegeoip.org": [
+        "www.speedtest.net",
+        "cloudflare.com"
+      ],
+      "time.apple.com": [
+        "time.g.aaplimg.com",
+        "time.apple.com"
+      ]
+    }
+  },
+  "ntp": {
+    "enabled": true,
+    "interval": "12h0m0s",
+    "server": "time.apple.com",
+    "server_port": 123,
+    "tls_fragment": {}
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "mtu": 9000,
+      "address": [
+        "172.19.0.1/28",
+        "fdfe:dcba:9876::1/126"
+      ],
+      "auto_route": true,
+      "strict_route": true,
+      "endpoint_independent_nat": true,
+      "stack": "mixed",
+      "sniff": true
+    },
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "127.0.0.1",
+      "listen_port": 1080,
+      "sniff": true,
+      "sniff_override_destination": true
+    },
+    {
+      "type": "direct",
+      "tag": "dns-in",
+      "listen": "127.0.0.1",
+      "listen_port": 16450
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "selector",
+      "tag": "select",
+      "outbounds": [
+        "auto",
+        "Компьютер-Премиум подписка § 0"
+      ],
+      "default": "auto",
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "urltest",
+      "tag": "auto",
+      "outbounds": [
+        "Компьютер-Премиум подписка § 0"
+      ],
+      "url": "http://cp.cloudflare.com/",
+      "urls": [
+        "http://cp.cloudflare.com/",
+        "http://captive.apple.com/generate_204",
+        "https://cp.cloudflare.com",
+        "https://google.com/generate_204"
+      ],
+      "interval": "10m0s",
+      "tolerance": 1,
+      "idle_timeout": "30m0s",
+      "interrupt_exist_connections": true
+    },
+    {
+      "type": "vless",
+      "tag": "Компьютер-Премиум подписка § 0",
+      "server": "195.26.227.218",
+      "server_port": 12058,
+      "uuid": "f5b3b4e4-5d58-47bf-b031-79e00c33c7ae",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "google.com",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "VROGV72IaUVlgjm9jOqguaFS__W6bUYt-aeLESWUM3w",
+          "short_id": "aa62531bd09b31"
+        }
+      },
+      "packet_encoding": "xudp"
+    },
+    {
+      "type": "dns",
+      "tag": "dns-out §hide§"
+    },
+    {
+      "type": "direct",
+      "tag": "direct §hide§"
+    },
+    {
+      "type": "direct",
+      "tag": "direct-fragment §hide§",
+      "tls_fragment": {
+        "enabled": true,
+        "size": "2-4",
+        "sleep": "2-4"
+      }
+    },
+    {
+      "type": "direct",
+      "tag": "bypass §hide§"
+    },
+    {
+      "type": "block",
+      "tag": "block §hide§"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "inbound": "dns-in",
+        "outbound": "dns-out §hide§"
+      },
+      {
+        "port": 53,
+        "outbound": "dns-out §hide§"
+      },
+      {
+        "ip_cidr": "10.10.34.0/24",
+        "outbound": "select"
+      },
+      {
+        "domain": "time.apple.com",
+        "outbound": "direct §hide§"
+      }
+    ],
+    "final": "select",
+    "auto_detect_interface": true,
+    "override_android_vpn": true
+  },
+  "experimental": {
+    "clash_api": {
+      "external_controller": "127.0.0.1:16756",
+      "external_ui": "webui"
+    }
+  }
+}
+[37mDEBUG[0m[0000] DEBUGCOREStating Service with delay ?false
+DEBUG CORE Stating Service with delay ?false
+[37mDEBUG[0m[0000] INFOCORESTARTED: 
+INFO CORE STARTED: 

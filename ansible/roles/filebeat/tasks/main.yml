@@ -1,0 +1,89 @@
+---
+# Установка и настройка Filebeat 8.x
+
+- name: Install required packages
+  apt:
+    name:
+      - apt-transport-https
+      - gnupg2
+      - curl
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Check if Filebeat is already installed
+  stat:
+    path: /usr/share/filebeat/bin/filebeat
+  register: filebeat_installed
+
+- name: Download Filebeat deb package
+  get_url:
+    url: "https://mirror.yandex.ru/mirrors/elastic/8/pool/main/f/filebeat/filebeat-8.15.3-amd64.deb"
+    dest: /tmp/filebeat.deb
+    mode: '0644'
+    timeout: 300
+  become: yes
+  when: not filebeat_installed.stat.exists
+  register: filebeat_download
+  retries: 3
+  delay: 10
+  until: filebeat_download is succeeded
+
+- name: Install Filebeat from deb package
+  apt:
+    deb: /tmp/filebeat.deb
+    state: present
+  become: yes
+  when: not filebeat_installed.stat.exists
+  notify: Restart Filebeat
+
+- name: Configure Filebeat
+  template:
+    src: filebeat.yml.j2
+    dest: /etc/filebeat/filebeat.yml
+    owner: root
+    group: root
+    mode: '0600'
+  become: yes
+  notify: Restart Filebeat
+
+- name: Enable nginx module
+  command: filebeat modules enable nginx
+  become: yes
+  register: nginx_module
+  changed_when: "'Enabled nginx' in nginx_module.stdout"
+  failed_when: false
+
+
+- name: Configure nginx module
+  template:
+    src: nginx.yml.j2
+    dest: /etc/filebeat/modules.d/nginx.yml
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  notify: Restart Filebeat
+
+- name: Enable and start Filebeat service
+  systemd:
+    name: filebeat
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  become: yes
+
+- name: Test Filebeat configuration
+  command: filebeat test config
+  become: yes
+  register: filebeat_config_test
+  changed_when: false
+
+- name: Test Filebeat output
+  command: filebeat test output
+  become: yes
+  register: filebeat_output_test
+  changed_when: false
+  retries: 3
+  delay: 10
+  until: filebeat_output_test.rc == 0

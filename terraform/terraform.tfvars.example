@@ -1,0 +1,102 @@
+# =============================================================================
+# Terraform Variables Example File
+# =============================================================================
+# Copy this file to terraform.tfvars and fill in your values:
+#   cp terraform.tfvars.example terraform.tfvars
+#
+# IMPORTANT: Never commit terraform.tfvars to version control!
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# REQUIRED VARIABLES (must be set)
+# -----------------------------------------------------------------------------
+
+# Yandex Cloud ID - получить: yc config get cloud-id
+cloud_id = "b1g________________"
+
+# Yandex Cloud Folder ID - получить: yc config get folder-id
+folder_id = "b1g________________"
+
+# SSH public key for VM access
+# Generate with: ssh-keygen -t ed25519 -C "your_email@example.com"
+# Get public key: cat ~/.ssh/id_ed25519.pub
+ssh_public_key = "ssh-ed25519 AAAA... user@hostname"
+
+# -----------------------------------------------------------------------------
+# OPTIONAL VARIABLES (have defaults, uncomment to override)
+# -----------------------------------------------------------------------------
+
+# Availability Zones
+# default_zone = "ru-central1-a"
+# zone_a       = "ru-central1-a"
+# zone_b       = "ru-central1-b"
+
+# Service Account Key File (relative path from terraform directory)
+# service_account_key_file = "../sa-key.json"
+
+# -----------------------------------------------------------------------------
+# Network Configuration
+# -----------------------------------------------------------------------------
+
+# VPC Network name
+# vpc_name = "diploma-network"
+
+# Subnet CIDR blocks
+# subnet_public_cidr    = "10.0.1.0/24"
+# subnet_private_a_cidr = "10.0.10.0/24"
+# subnet_private_b_cidr = "10.0.11.0/24"
+
+# -----------------------------------------------------------------------------
+# VM Configuration
+# -----------------------------------------------------------------------------
+
+# Default VM settings
+# vm_username     = "ubuntu"
+# vm_platform_id  = "standard-v2"
+# vm_preemptible  = true          # Set to false for production
+# vm_core_fraction = 20           # 5, 20, 50, or 100%
+
+# Bastion Host Resources
+# bastion_cores     = 2
+# bastion_memory    = 2           # GB
+# bastion_disk_size = 10          # GB
+
+# Web Servers Resources
+# web_cores     = 2
+# web_memory    = 2               # GB
+# web_disk_size = 10              # GB
+
+# Zabbix Server Resources
+# zabbix_cores     = 2
+# zabbix_memory    = 4            # GB
+# zabbix_disk_size = 10           # GB
+
+# Elasticsearch Server Resources
+# elastic_cores     = 2
+# elastic_memory    = 4           # GB
+# elastic_disk_size = 20          # GB
+
+# Kibana Server Resources
+# kibana_cores     = 2
+# kibana_memory    = 2            # GB
+# kibana_disk_size = 10           # GB
+
+# -----------------------------------------------------------------------------
+# Snapshot Configuration
+# -----------------------------------------------------------------------------
+
+# Snapshot retention period in days
+# snapshot_retention_days = 7
+
+# Snapshot schedule (cron expression)
+# snapshot_schedule_expression = "0 0 * * *"  # Daily at midnight UTC
+
+# -----------------------------------------------------------------------------
+# Tags/Labels
+# -----------------------------------------------------------------------------
+
+# Environment name
+# environment = "prod"            # dev, staging, or prod
+
+# Project name for resource labeling
+# project_name = "diploma"

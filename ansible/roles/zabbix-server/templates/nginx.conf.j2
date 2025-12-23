@@ -1,0 +1,64 @@
+server {
+    listen 80 default_server;
+    server_name {{ ansible_host }} {{ inventory_hostname }} _;
+
+    root /usr/share/zabbix;
+    index index.php;
+
+    location = /favicon.ico {
+        log_not_found off;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    location /zabbix {
+        alias /usr/share/zabbix;
+        try_files $uri $uri/ @zabbix;
+
+        location ~ ^/zabbix/(.+\.php)$ {
+            alias /usr/share/zabbix;
+            fastcgi_pass unix:/run/php/zabbix.sock;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME /usr/share/zabbix/$1;
+            include fastcgi_params;
+            fastcgi_param PHP_VALUE "
+                max_execution_time = 300
+                memory_limit = 128M
+                post_max_size = 16M
+                upload_max_filesize = 2M
+                max_input_time = 300
+                date.timezone = Europe/Moscow
+            ";
+        }
+
+        location ~ ^/zabbix/assets/ {
+            access_log off;
+            expires 10d;
+        }
+    }
+
+    location @zabbix {
+        rewrite ^/zabbix/(.*)$ /zabbix/index.php?$1 last;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/run/php/zabbix.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+        fastcgi_param PHP_VALUE "
+            max_execution_time = 300
+            memory_limit = 128M
+            post_max_size = 16M
+            upload_max_filesize = 2M
+            max_input_time = 300
+            date.timezone = Europe/Moscow
+        ";
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}

@@ -1,0 +1,26 @@
+---
+# Common variables for all hosts
+
+# Timezone
+timezone: Europe/Moscow
+
+# Common packages
+common_packages:
+  - vim
+  - curl
+  - wget
+  - git
+  - htop
+  - net-tools
+
+# Zabbix configuration
+zabbix_server_fqdn: zabbix.ru-central1.internal
+zabbix_agent_version: "6.0"
+
+# Elasticsearch configuration
+elasticsearch_host: elastic.ru-central1.internal
+elasticsearch_port: 9200
+
+# Kibana configuration
+kibana_host: kibana.ru-central1.internal
+kibana_port: 5601

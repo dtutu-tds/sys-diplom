@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дипломный проект - Отказоустойчивая инфраструктура</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .info {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .hostname {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Дипломный проект Netology</h1>
+        <div class="hostname">
+            Сервер: <span id="hostname">Loading...</span>
+        </div>
+        <div class="info">
+            <h3>Отказоустойчивая инфраструктура в Yandex Cloud</h3>
+            <ul>
+                <li>✅ Application Load Balancer</li>
+                <li>✅ Два веб-сервера в разных зонах доступности</li>
+                <li>✅ Мониторинг Zabbix</li>
+                <li>✅ Централизованное логирование ELK</li>
+                <li>✅ Автоматическое резервное копирование</li>
+            </ul>
+        </div>
+        <div class="info">
+            <p><strong>Технологии:</strong> Terraform, Ansible, Nginx, Zabbix, Elasticsearch, Kibana, Filebeat</p>
+        </div>
+    </div>
+    <script>
+        fetch('/hostname.txt')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('hostname').textContent = data.trim();
+            })
+            .catch(() => {
+                document.getElementById('hostname').textContent = 'Unknown';
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+---
+# Handlers for Filebeat
+
+- name: Restart Filebeat
+  systemd:
+    name: filebeat
+    state: restarted
+    daemon_reload: yes
+  become: yes

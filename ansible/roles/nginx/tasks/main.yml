@@ -1,0 +1,72 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: yes
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+  become: yes
+
+- name: Create site directory
+  file:
+    path: /var/www/site
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  become: yes
+
+- name: Copy site files
+  copy:
+    src: site/
+    dest: /var/www/site/
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  become: yes
+  notify: Restart Nginx
+
+- name: Create hostname file
+  template:
+    src: hostname.txt.j2
+    dest: /var/www/site/hostname.txt
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  become: yes
+
+- name: Configure Nginx virtual host
+  template:
+    src: site.conf.j2
+    dest: /etc/nginx/sites-available/site
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  notify: Restart Nginx
+
+- name: Enable site configuration
+  file:
+    src: /etc/nginx/sites-available/site
+    dest: /etc/nginx/sites-enabled/site
+    state: link
+  become: yes
+  notify: Restart Nginx
+
+- name: Disable default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  become: yes
+  notify: Restart Nginx
+
+- name: Ensure Nginx is started and enabled
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+  become: yes

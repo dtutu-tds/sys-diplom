@@ -1,0 +1,10 @@
+# Nginx module configuration
+# Managed by Ansible
+
+- module: nginx
+  access:
+    enabled: true
+    var.paths: ["{{ filebeat_nginx_access_log }}"]
+  error:
+    enabled: true
+    var.paths: ["{{ filebeat_nginx_error_log }}"]

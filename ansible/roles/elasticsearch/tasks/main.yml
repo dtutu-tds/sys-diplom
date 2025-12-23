@@ -1,0 +1,95 @@
+---
+# Установка и настройка Elasticsearch 8.x
+# Используем прямую загрузку deb-пакета из-за геоблокировки репозитория
+
+- name: Install required packages
+  apt:
+    name:
+      - apt-transport-https
+      - gnupg2
+      - curl
+      - openjdk-17-jdk
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Check if Elasticsearch is already installed
+  stat:
+    path: /usr/share/elasticsearch/bin/elasticsearch
+  register: elasticsearch_installed
+
+- name: Download Elasticsearch deb package
+  get_url:
+    url: "https://mirror.yandex.ru/mirrors/elastic/8/pool/main/e/elasticsearch/elasticsearch-8.15.3-amd64.deb"
+    dest: /tmp/elasticsearch.deb
+    mode: '0644'
+    timeout: 300
+  become: yes
+  when: not elasticsearch_installed.stat.exists
+  register: es_download
+  retries: 3
+  delay: 10
+  until: es_download is succeeded
+
+- name: Install Elasticsearch from deb package
+  apt:
+    deb: /tmp/elasticsearch.deb
+    state: present
+  become: yes
+  when: not elasticsearch_installed.stat.exists
+  notify: Restart Elasticsearch
+
+- name: Remove auto-generated security settings from keystore
+  shell: |
+    /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.transport.ssl.keystore.secure_password --force || true
+    /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.transport.ssl.truststore.secure_password --force || true
+    /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.http.ssl.keystore.secure_password --force || true
+  become: yes
+  ignore_errors: yes
+
+- name: Configure Elasticsearch
+  template:
+    src: elasticsearch.yml.j2
+    dest: /etc/elasticsearch/elasticsearch.yml
+    owner: root
+    group: elasticsearch
+    mode: '0660'
+  become: yes
+  notify: Restart Elasticsearch
+
+- name: Configure JVM options
+  template:
+    src: jvm.options.j2
+    dest: /etc/elasticsearch/jvm.options.d/heap.options
+    owner: root
+    group: elasticsearch
+    mode: '0660'
+  become: yes
+  notify: Restart Elasticsearch
+
+
+- name: Enable and start Elasticsearch service
+  systemd:
+    name: elasticsearch
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  become: yes
+
+- name: Wait for Elasticsearch to start
+  wait_for:
+    host: localhost
+    port: "{{ elasticsearch_http_port }}"
+    delay: 15
+    timeout: 180
+
+- name: Check Elasticsearch health
+  uri:
+    url: "http://localhost:{{ elasticsearch_http_port }}/_cluster/health"
+    method: GET
+    return_content: yes
+  register: es_health
+  retries: 10
+  delay: 15
+  until: es_health.status == 200
+  become: yes
