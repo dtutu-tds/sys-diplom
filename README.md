@@ -22,17 +22,17 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Yandex Cloud VPC                        │
+│                    Yandex Cloud VPC                         │
 │                                                             │
 │  ┌─────────────────┐  ┌─────────────────────────────────┐   │
 │  │  Public Subnet  │  │        Private Subnets          │   │
-│  │   10.0.1.0/24   │  │  Zone A: 10.0.10.0/24          │   │
-│  │                 │  │  Zone B: 10.0.11.0/24          │   │
+│  │   10.0.1.0/24   │  │  Zone A: 10.0.10.0/24           │   │
+│  │                 │  │  Zone B: 10.0.11.0/24           │   │
 │  │  ┌───────────┐  │  │                                 │   │
-│  │  │ Bastion   │  │  │  ┌─────────┐  ┌─────────────┐   │   │
-│  │  │ Host      │  │  │  │  Web1   │  │ Elasticsearch│   │   │
-│  │  └───────────┘  │  │  │ (Nginx) │  │              │   │   │
-│  │                 │  │  └─────────┘  └─────────────┘   │   │
+│  │  │ Bastion   │  │  │  ┌─────────┐  ┌───────────────┐ │   │
+│  │  │ Host      │  │  │  │  Web1   │  │ Elasticsearch │ │   │
+│  │  └───────────┘  │  │  │ (Nginx) │  │               │ │   │
+│  │                 │  │  └─────────┘  └───────────────┘ │   │
 │  │  ┌───────────┐  │  │                                 │   │
 │  │  │ Zabbix    │  │  │  ┌─────────┐                    │   │
 │  │  │ Server    │  │  │  │  Web2   │                    │   │
@@ -44,10 +44,10 @@
 │  │  └───────────┘  │  │                                 │   │
 │  └─────────────────┘  └─────────────────────────────────┘   │
 │                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │            Application Load Balancer                │   │
-│  │              (Public IP)                            │   │
-│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │            Application Load Balancer                │    │
+│  │                   (Public IP)                       │    │
+│  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -74,22 +74,22 @@
 
 ```
 .
-├── terraform/                 # Terraform конфигурации
+├── terraform/                # Terraform конфигурации
 │   ├── main.tf               # Основная конфигурация
 │   ├── variables.tf          # Переменные
 │   ├── outputs.tf            # Выходные значения
 │   ├── instances.tf          # Конфигурация ВМ
-│   ├── vpc.tf               # Сетевая конфигурация
-│   ├── alb.tf               # Application Load Balancer
-│   ├── security_groups.tf   # Группы безопасности
-│   └── snapshots.tf         # Резервное копирование
+│   ├── vpc.tf                # Сетевая конфигурация
+│   ├── alb.tf                # Application Load Balancer
+│   ├── security_groups.tf    # Группы безопасности
+│   └── snapshots.tf          # Резервное копирование
 ├── ansible/                  # Ansible конфигурации
-│   ├── inventories/         # Инвентори файлы
-│   ├── playbooks/           # Playbook'и
-│   ├── roles/               # Роли Ansible
-│   └── group_vars/          # Групповые переменные
-├── scripts/                 # Вспомогательные скрипты
-└── webui/                   # Статические файлы сайта
+│   ├── inventories/          # Инвентори файлы
+│   ├── playbooks/            # Playbook'и
+│   ├── roles/                # Роли Ansible
+│   └── group_vars/           # Групповые переменные
+├── scripts/                  # Вспомогательные скрипты
+└── webui/                    # Статические файлы сайта
 ```
 
 ## Быстрый старт
@@ -524,15 +524,11 @@ resource "yandex_compute_instance_group" "web_group" {
 }
 ```
 
-## Контакты и поддержка
+## Документация
 
 - **Документация**: [Yandex Cloud Docs](https://cloud.yandex.ru/docs)
 - **Terraform Provider**: [Yandex Cloud Terraform](https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs)
 - **Ansible Collections**: [Yandex Cloud Ansible](https://galaxy.ansible.com/yandex/cloud)
-
-## Лицензия
-
-Этот проект распространяется под лицензией MIT. См. файл `LICENSE` для подробностей.
 
 ---
 
