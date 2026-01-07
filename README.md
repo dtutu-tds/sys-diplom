@@ -162,8 +162,6 @@ ansible-playbook -i inventories/prod.yml playbooks/elk.yml
 
 ![Ansible Inventory](screenshots/Infrastracture/ansible-inventory.png)
 
-```
-
 ## Конфигурация компонентов
 
 ### Веб-серверы (Nginx)
