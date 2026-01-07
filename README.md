@@ -18,6 +18,8 @@
 
 ### Сетевая архитектура
 
+![Infrastructure Overview](screenshots/Infrastracture/infrastructure-overview.png)
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Yandex Cloud VPC                        │
@@ -52,16 +54,19 @@
 ## Технологический стек
 
 ### Infrastructure as Code
+
 - **Terraform**: Управление инфраструктурой
 - **Ansible**: Автоматизация конфигурации серверов
 
 ### Мониторинг и логирование
+
 - **Zabbix 6.0**: Мониторинг системных метрик и алертинг
 - **Elasticsearch**: Хранение и индексация логов
 - **Kibana**: Визуализация и анализ логов
 - **Filebeat**: Сбор логов с веб-серверов
 
 ### Веб-сервисы
+
 - **Nginx**: Веб-сервер для статического контента
 - **Application Load Balancer**: Балансировка нагрузки
 
@@ -139,6 +144,8 @@ terraform plan
 terraform apply
 ```
 
+![Terraform Apply Plan](screenshots/Infrastracture/terraform-plan-2.png)
+
 #### 4. Настройка серверов с Ansible
 
 ```bash
@@ -151,6 +158,10 @@ cd ansible
 ansible-playbook -i inventories/prod.yml playbooks/web.yml
 ansible-playbook -i inventories/prod.yml playbooks/zabbix.yml
 ansible-playbook -i inventories/prod.yml playbooks/elk.yml
+```
+
+![Ansible Inventory](screenshots/Infrastracture/ansible-inventory.png)
+
 ```
 
 ## Конфигурация компонентов
@@ -168,12 +179,22 @@ ansible-playbook -i inventories/prod.yml playbooks/elk.yml
 - **Backend Group**: Настроен на Target Group
 - **HTTP Router**: Маршрутизация трафика
 
+![Application Load Balancer](screenshots/Site/alb.png)
+![Target Group](screenshots/Site/target-group.png)
+
+#### Тест веб-сайта
+
+![Website Test](screenshots/Site/website-test.png)
+
 ### Система мониторинга (Zabbix)
 
 - **Веб-интерфейс**: `http://<zabbix-ip>/zabbix`
 - **Логин**: Admin / zabbix
 - **Мониторинг**: CPU, RAM, диски, сеть, HTTP запросы
 - **Алерты**: Настроены пороговые значения
+
+![Zabbix Dashboard](screenshots/Monitoring/zabbix-dashboard.png)
+![Zabbix Hosts](screenshots/Monitoring/zabbix-hosts.png)
 
 ### Система логирования (ELK)
 
@@ -205,6 +226,8 @@ ansible-playbook -i inventories/prod.yml playbooks/elk.yml
 - **Время хранения**: 7 дней
 - **Охват**: Все диски ВМ
 
+![Yandex Cloud Snapshots](screenshots/Backup/yc-snapshots.png)
+
 ### Восстановление
 
 ```bash
@@ -225,18 +248,21 @@ yc compute instance attach-disk <instance-id> --disk-name restored-disk
 #### Системные метрики (USE принцип)
 
 **Utilization (Использование):**
+
 - CPU utilization %
 - Memory utilization %
 - Disk space utilization %
 - Network bandwidth utilization %
 
 **Saturation (Насыщение):**
+
 - CPU load average
 - Memory swap usage
 - Disk I/O wait time
 - Network packet drops
 
 **Errors (Ошибки):**
+
 - System error logs
 - Network interface errors
 - Disk read/write errors
@@ -261,10 +287,12 @@ yc compute instance attach-disk <instance-id> --disk-name restored-disk
 ### Сбор логов
 
 **Nginx логи:**
+
 - Access logs: `/var/log/nginx/access.log`
 - Error logs: `/var/log/nginx/error.log`
 
 **Системные логи:**
+
 - Syslog: `/var/log/syslog`
 - Auth logs: `/var/log/auth.log`
 
@@ -274,6 +302,8 @@ yc compute instance attach-disk <instance-id> --disk-name restored-disk
 2. **Ошибки**: Мониторинг ошибок 4xx/5xx
 3. **Производительность**: Время ответа сервера
 4. **Безопасность**: Анализ попыток входа
+
+![Kibana Discover](screenshots/Logging/kibana-discover.png)
 
 ## Управление и обслуживание
 

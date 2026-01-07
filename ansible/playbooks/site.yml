@@ -1,0 +1,6 @@
+---
+- import_playbook: zabbix.yml
+- import_playbook: elk.yml
+- import_playbook: web.yml
+- import_playbook: zabbix-agents.yml
+- import_playbook: filebeat.yml

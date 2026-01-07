@@ -45,6 +45,13 @@ resource "yandex_vpc_security_group" "sg_web" {
     port              = 22
   }
 
+  ingress {
+    protocol          = "TCP"
+    description       = "Allow Zabbix Agent access from Zabbix Server"
+    security_group_id = yandex_vpc_security_group.sg_zabbix.id
+    port              = 10050
+  }
+
   egress {
     protocol       = "ANY"
     description    = "Allow all outgoing traffic"

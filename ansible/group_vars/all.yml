@@ -15,6 +15,7 @@ common_packages:
 
 # Zabbix configuration
 zabbix_server_fqdn: zabbix.ru-central1.internal
+zabbix_server_host: "10.0.1.18"
 zabbix_agent_version: "6.0"
 
 # Elasticsearch configuration
