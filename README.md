@@ -196,8 +196,8 @@ ansible-playbook -i inventories/prod.yml playbooks/elk.yml
 
 ### Система логирования (ELK)
 
-- **Elasticsearch**: Хранение логов на порту 9200
-- **Kibana**: Веб-интерфейс на порту 5601
+- **Elasticsearch**: Хранение логов `http://<elastic-ip>:9200`
+- **Kibana**: Веб-интерфейс `http://<kibana-ip>:5601`
 - **Filebeat**: Сбор access.log и error.log с Nginx
 
 ### Безопасность
