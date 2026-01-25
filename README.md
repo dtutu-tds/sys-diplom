@@ -121,8 +121,8 @@ Filebeat на веб-серверах отправляет access.log и error.l
 | Сервис | URL | Логин/пароль |
 |--------|-----|--------------|
 | Сайт | http://158.160.142.8 | — |
-| Zabbix | http://178.154.205.89/zabbix | Admin / zabbix |
-| Kibana | http://178.154.220.170:5601 | — |
+| Zabbix | http://158.160.123.204/zabbix | Admin / zabbix |
+| Kibana | http://193.32.218.223:5601 | — |
 
 ## Скриншоты
 

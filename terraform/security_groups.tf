@@ -11,6 +11,13 @@ resource "yandex_vpc_security_group" "sg_bastion" {
     port           = 22
   }
 
+  ingress {
+    protocol          = "TCP"
+    description       = "Allow Zabbix Agent access from Zabbix Server"
+    security_group_id = yandex_vpc_security_group.sg_zabbix.id
+    port              = 10050
+  }
+
   egress {
     protocol       = "ANY"
     description    = "Allow all outgoing traffic"
@@ -86,6 +93,13 @@ resource "yandex_vpc_security_group" "sg_elastic" {
     port              = 22
   }
 
+  ingress {
+    protocol          = "TCP"
+    description       = "Allow Zabbix Agent access from Zabbix Server"
+    security_group_id = yandex_vpc_security_group.sg_zabbix.id
+    port              = 10050
+  }
+
   egress {
     protocol       = "ANY"
     description    = "Allow all outgoing traffic"
@@ -111,6 +125,13 @@ resource "yandex_vpc_security_group" "sg_kibana" {
     description       = "Allow SSH from bastion"
     security_group_id = yandex_vpc_security_group.sg_bastion.id
     port              = 22
+  }
+
+  ingress {
+    protocol          = "TCP"
+    description       = "Allow Zabbix Agent access from Zabbix Server"
+    security_group_id = yandex_vpc_security_group.sg_zabbix.id
+    port              = 10050
   }
 
   egress {
