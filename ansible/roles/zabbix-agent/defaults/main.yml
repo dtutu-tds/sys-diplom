@@ -1,0 +1,2 @@
+---
+zabbix_server_host: "{{ hostvars['zabbix.ru-central1.internal']['ansible_host'] | default('178.154.240.244') }}"

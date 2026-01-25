@@ -1,0 +1,8 @@
+---
+- name: Configure web servers
+  hosts: web
+  become: yes
+  
+  roles:
+    - nginx
+    - zabbix-agent

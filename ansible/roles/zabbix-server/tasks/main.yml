@@ -1,0 +1,166 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install PostgreSQL
+  apt:
+    name:
+      - postgresql
+      - postgresql-contrib
+      - python3-psycopg2
+    state: present
+
+- name: Start and enable PostgreSQL
+  systemd:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Create Zabbix database
+  become_user: postgres
+  postgresql_db:
+    name: zabbix
+    encoding: UTF-8
+    state: present
+
+- name: Create Zabbix database user
+  become_user: postgres
+  postgresql_user:
+    name: zabbix
+    password: "{{ zabbix_db_password }}"
+    state: present
+
+- name: Grant all privileges on database to zabbix user
+  become_user: postgres
+  postgresql_query:
+    db: zabbix
+    query: "GRANT ALL PRIVILEGES ON DATABASE zabbix TO zabbix"
+
+- name: Grant privileges on schema to zabbix user
+  become_user: postgres
+  postgresql_query:
+    db: zabbix
+    query: "GRANT ALL PRIVILEGES ON SCHEMA public TO zabbix"
+
+- name: Grant privileges on all tables to zabbix user
+  become_user: postgres
+  postgresql_query:
+    db: zabbix
+    query: "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO zabbix"
+
+- name: Grant privileges on all sequences to zabbix user
+  become_user: postgres
+  postgresql_query:
+    db: zabbix
+    query: "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO zabbix"
+
+- name: Set default privileges for future tables
+  become_user: postgres
+  postgresql_query:
+    db: zabbix
+    query: "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO zabbix"
+
+- name: Download Zabbix repository package
+  get_url:
+    url: https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-4+ubuntu22.04_all.deb
+    dest: /tmp/zabbix-release.deb
+    mode: '0644'
+
+- name: Install Zabbix repository
+  apt:
+    deb: /tmp/zabbix-release.deb
+    state: present
+
+- name: Update apt cache after adding Zabbix repo
+  apt:
+    update_cache: yes
+
+- name: Install Zabbix server and frontend
+  apt:
+    name:
+      - zabbix-server-pgsql
+      - zabbix-frontend-php
+      - zabbix-nginx-conf
+      - zabbix-sql-scripts
+      - zabbix-agent
+      - php-pgsql
+    state: present
+
+- name: Check if database schema is imported
+  become_user: postgres
+  postgresql_query:
+    db: zabbix
+    query: "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'"
+  register: db_tables
+  changed_when: false
+
+- name: Import initial schema
+  shell: zcat /usr/share/zabbix-sql-scripts/postgresql/server.sql.gz | sudo -u postgres psql zabbix
+  when: db_tables.query_result[0].count | int < 10
+  args:
+    executable: /bin/bash
+
+- name: Configure Zabbix server database connection
+  lineinfile:
+    path: /etc/zabbix/zabbix_server.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  loop:
+    - { regexp: '^DBHost=', line: 'DBHost=localhost' }
+    - { regexp: '^DBName=', line: 'DBName=zabbix' }
+    - { regexp: '^DBUser=', line: 'DBUser=zabbix' }
+    - { regexp: '^# DBPassword=', line: 'DBPassword={{ zabbix_db_password }}' }
+    - { regexp: '^DBPassword=', line: 'DBPassword={{ zabbix_db_password }}' }
+  notify: Restart Zabbix server
+
+- name: Configure Zabbix Nginx
+  template:
+    src: nginx.conf.j2
+    dest: /etc/zabbix/nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Nginx
+
+- name: Disable default Nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart Nginx
+
+- name: Configure PHP-FPM for Zabbix
+  lineinfile:
+    path: /etc/zabbix/php-fpm.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  loop:
+    - { regexp: '^; php_value\[date.timezone\]', line: 'php_value[date.timezone] = Europe/Moscow' }
+  notify: Restart PHP-FPM
+
+- name: Start and enable Zabbix server
+  systemd:
+    name: zabbix-server
+    state: started
+    enabled: yes
+
+- name: Start and enable Zabbix agent
+  systemd:
+    name: zabbix-agent
+    state: started
+    enabled: yes
+
+- name: Start and enable Nginx
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Start and enable PHP-FPM
+  systemd:
+    name: php8.1-fpm
+    state: started
+    enabled: yes

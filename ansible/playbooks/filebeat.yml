@@ -1,0 +1,8 @@
+---
+# Filebeat playbook
+
+- name: Install Filebeat on web servers
+  hosts: web
+  become: yes
+  roles:
+    - filebeat

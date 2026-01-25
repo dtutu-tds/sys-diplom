@@ -1,0 +1,26 @@
+# Elasticsearch configuration
+# Managed by Ansible
+
+# Cluster
+cluster.name: {{ elasticsearch_cluster_name }}
+node.name: {{ elasticsearch_node_name }}
+
+# Paths
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch
+
+# Network
+network.host: {{ elasticsearch_network_host }}
+http.port: {{ elasticsearch_http_port }}
+
+# Discovery
+discovery.type: {{ elasticsearch_discovery_type }}
+
+# Security (disabled for simplicity in development)
+xpack.security.enabled: false
+xpack.security.enrollment.enabled: false
+xpack.security.http.ssl.enabled: false
+xpack.security.transport.ssl.enabled: false
+
+# Disable machine learning (reduces memory usage)
+xpack.ml.enabled: false

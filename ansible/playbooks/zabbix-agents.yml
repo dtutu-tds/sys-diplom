@@ -1,0 +1,6 @@
+---
+- name: Configure Zabbix Agents on all servers
+  hosts: all:!zabbix
+  become: yes
+  roles:
+    - zabbix-agent

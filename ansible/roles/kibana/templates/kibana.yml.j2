@@ -1,0 +1,29 @@
+# Kibana configuration
+# Managed by Ansible
+
+# Server
+server.port: {{ kibana_server_port }}
+server.host: "{{ kibana_server_host }}"
+{% if kibana_public_base_url %}
+server.publicBaseUrl: "{{ kibana_public_base_url }}"
+{% endif %}
+
+# Elasticsearch
+elasticsearch.hosts: ["{{ kibana_elasticsearch_hosts }}"]
+
+# Logging
+logging:
+  appenders:
+    file:
+      type: file
+      fileName: /var/log/kibana/kibana.log
+      layout:
+        type: json
+  root:
+    appenders:
+      - default
+      - file
+    level: info
+
+# i18n
+i18n.locale: "en"

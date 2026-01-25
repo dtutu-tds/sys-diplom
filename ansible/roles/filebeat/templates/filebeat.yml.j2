@@ -1,0 +1,29 @@
+# Filebeat configuration
+# Managed by Ansible
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+# Elasticsearch output
+output.elasticsearch:
+  hosts: ["{{ filebeat_elasticsearch_hosts }}"]
+
+# Kibana setup
+setup.kibana:
+  host: "{{ filebeat_kibana_host }}"
+
+# Processors
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_cloud_metadata: ~
+
+# Logging
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0640

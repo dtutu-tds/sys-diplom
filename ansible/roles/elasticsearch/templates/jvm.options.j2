@@ -1,0 +1,6 @@
+# JVM heap size configuration
+# Managed by Ansible
+
+# Set min and max heap size to 50% of available RAM
+-Xms{{ elasticsearch_heap_size }}
+-Xmx{{ elasticsearch_heap_size }}

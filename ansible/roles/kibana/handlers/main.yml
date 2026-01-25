@@ -1,0 +1,9 @@
+---
+# Handlers for Kibana
+
+- name: Restart Kibana
+  systemd:
+    name: kibana
+    state: restarted
+    daemon_reload: yes
+  become: yes

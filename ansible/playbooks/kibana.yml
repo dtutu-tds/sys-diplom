@@ -1,0 +1,10 @@
+---
+# Kibana playbook
+
+- name: Install Kibana
+  hosts: kibana.ru-central1.internal
+  become: yes
+  vars:
+    kibana_public_base_url: "http://{{ ansible_host }}:5601"
+  roles:
+    - kibana

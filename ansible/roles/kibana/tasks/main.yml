@@ -1,0 +1,75 @@
+---
+# Установка и настройка Kibana 8.x
+
+- name: Install required packages
+  apt:
+    name:
+      - apt-transport-https
+      - gnupg2
+      - curl
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Check if Kibana is already installed
+  stat:
+    path: /usr/share/kibana/bin/kibana
+  register: kibana_installed
+
+- name: Download Kibana deb package
+  get_url:
+    url: "https://mirror.yandex.ru/mirrors/elastic/8/pool/main/k/kibana/kibana-8.15.3-amd64.deb"
+    dest: /tmp/kibana.deb
+    mode: '0644'
+    timeout: 300
+  become: yes
+  when: not kibana_installed.stat.exists
+  register: kibana_download
+  retries: 3
+  delay: 10
+  until: kibana_download is succeeded
+
+- name: Install Kibana from deb package
+  apt:
+    deb: /tmp/kibana.deb
+    state: present
+  become: yes
+  when: not kibana_installed.stat.exists
+  notify: Restart Kibana
+
+- name: Configure Kibana
+  template:
+    src: kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+    owner: root
+    group: kibana
+    mode: '0660'
+  become: yes
+  notify: Restart Kibana
+
+
+- name: Enable and start Kibana service
+  systemd:
+    name: kibana
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  become: yes
+
+- name: Wait for Kibana to start
+  wait_for:
+    host: localhost
+    port: "{{ kibana_server_port }}"
+    delay: 15
+    timeout: 180
+
+- name: Check Kibana status
+  uri:
+    url: "http://localhost:{{ kibana_server_port }}/api/status"
+    method: GET
+    return_content: yes
+  register: kibana_status
+  retries: 10
+  delay: 15
+  until: kibana_status.status == 200
+  become: yes

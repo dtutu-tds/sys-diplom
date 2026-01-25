@@ -1,0 +1,15 @@
+---
+# Kibana defaults
+
+# Версия Kibana
+kibana_version: "8.x"
+
+# Сетевые настройки
+kibana_server_host: "0.0.0.0"
+kibana_server_port: 5601
+
+# Elasticsearch
+kibana_elasticsearch_hosts: "http://elastic.ru-central1.internal:9200"
+
+# Public URL (будет переопределено в inventory)
+kibana_public_base_url: ""

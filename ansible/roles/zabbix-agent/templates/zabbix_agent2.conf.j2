@@ -1,0 +1,15 @@
+# Zabbix Agent 2 configuration file
+
+PidFile=/run/zabbix/zabbix_agent2.pid
+LogFile=/var/log/zabbix/zabbix_agent2.log
+LogFileSize=0
+
+# Zabbix Server
+Server={{ zabbix_server_host }}
+ServerActive={{ zabbix_server_host }}
+
+# Hostname
+Hostname={{ inventory_hostname }}
+
+# Include additional configuration files
+Include=/etc/zabbix/zabbix_agent2.d/*.conf
