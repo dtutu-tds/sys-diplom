@@ -96,6 +96,7 @@ Zabbix собирает метрики со всех серверов по пр�
 - Статус nginx на веб-серверах
 
 ![Zabbix Dashboard](screenshots/Monitoring/zabbix-dashboard.png)
+
 ![Zabbix Dashboard-Update](screenshots/Monitoring/zabbix-new-dashboard.png)
 ## Логи
 
