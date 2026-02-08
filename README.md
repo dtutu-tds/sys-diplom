@@ -96,7 +96,7 @@ Zabbix собирает метрики со всех серверов по пр�
 - Статус nginx на веб-серверах
 
 ![Zabbix Dashboard](screenshots/Monitoring/zabbix-dashboard.png)
-
+![Zabbix Dashboard (Update)](screenshots/Monitoring/zabbix-new-dashboard.png)
 ## Логи
 
 Filebeat на веб-серверах отправляет access.log и error.log nginx в Elasticsearch. Смотреть можно в Kibana.
@@ -121,8 +121,8 @@ Filebeat на веб-серверах отправляет access.log и error.l
 | Сервис | URL | Логин/пароль |
 |--------|-----|--------------|
 | Сайт | http://158.160.142.8 | — |
-| Zabbix | http://158.160.123.204/zabbix | Admin / zabbix |
-| Kibana | http://193.32.218.223:5601 | — |
+| Zabbix | http://93.77.176.179/zabbix | Admin / zabbix |
+| Kibana | http://51.250.2.184:5601 | — |
 
 ## Скриншоты
 
